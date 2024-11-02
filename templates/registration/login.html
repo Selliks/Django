@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="icon" href="{% static 'images/favicon.ico' %}" type="image/x-icon">
+    <link rel="stylesheet" href="{% static 'css/login.css' %}">
+    <title>Nice dark sign in form</title>
+</head>
+<body>
+    <h1>Sign In Form</h1>
+    <div id="wrapper">
+        <form id="signin" method="post" action="{% url 'login' %}" autocomplete="off">
+            {% csrf_token %}
+            {{ form.username }}
+            {{ form.password }}
+            <button type="submit">&#xf0da;</button>
+            <p>Forgot your password? <a href="#">click here</a></p>
+            {{ form.errors }}
+        </form>
+    </div>
+</body>
+</html>
