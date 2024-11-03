@@ -1,4 +1,5 @@
 from django import forms
+from .models import Task
 from django.contrib.auth.models import User
 
 
@@ -21,3 +22,9 @@ class RegisterForm(forms.ModelForm):
         if password and password_confirm and password != password_confirm:
             raise forms.ValidationError("Passwords don't match")
         return password_confirm
+
+
+class TaskForm(forms.ModelForm):
+    class Meta:
+        model = Task
+        fields = ['title', 'description']

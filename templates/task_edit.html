@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Task</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/task_edit.css' %}">
+</head>
+<body>
+    <h1>Edit Task</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+    <a href="{% url 'task_list' %}" style="display: block; text-align: center; margin-top: 15px; color: #3b82f6;">Back to Task List</a>
+</body>
+</html>

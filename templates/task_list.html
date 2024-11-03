@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Task List</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/task_list.css' %}">
+</head>
+<body>
+    <h1>List tasks</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Add</button>
+    </form>
+
+    <div class="filter-buttons">
+        <a href="?status=all" class="filter-btn {% if filter_status == 'all' %}active{% endif %}">All Tasks</a>
+        <a href="?status=incomplete" class="filter-btn {% if filter_status == 'incomplete' %}active{% endif %}">Incomplete Tasks</a>
+        <a href="?status=completed" class="filter-btn {% if filter_status == 'completed' %}active{% endif %}">Completed Tasks</a>
+    </div>
+
+    <h2>Tasks:</h2>
+    <ul>
+        {% for task in tasks %}
+            <li>
+                {{ task.title }} - {{ task.description }}
+                <span class="task-buttons">
+                    {% if task.completed %}
+                        <a href="{% url 'task_incomplete' task.id %}" class="done-btn">Done✓</a>
+                    {% else %}
+                        <a href="{% url 'task_complete' task.id %}" class="complete-btn">Complete</a>
+                    {% endif %}
+                    <a href="{% url 'task_edit' task.id %}" class="edit-btn">Edit</a>
+                    <a href="{% url 'task_delete' task.id %}" class="delete-btn">Delete</a>
+                </span>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
