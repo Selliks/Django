@@ -1,8 +1,9 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
-from .models import Task
-from .forms import LoginForm, RegisterForm, TaskForm
+from .models import Task, Member
+from .forms import LoginForm, RegisterForm, TaskForm, MemberForm
+from django.db.models import Q
 
 
 # Create your views here.
@@ -37,6 +38,34 @@ def secret_view(request):
     return render(request, "secret.html")
 
 
+@login_required
+def member(request):
+    filter_verification = request.GET.get('status', 'all')
+    search_query = request.GET.get('search', '')
+
+    members = Member.objects.all()
+
+    if filter_verification == 'completed':
+        members = members.filter(is_verificated=True)
+    elif filter_verification == 'incomplete':
+        members = members.filter(is_verificated=False)
+
+    if search_query:
+        members = members.filter(
+            Q(username__icontains=search_query) | Q(email__icontains=search_query)
+        )
+
+    if request.method == 'POST':
+        form = MemberForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('member')
+    else:
+        form = MemberForm()
+
+    return render(request, 'member.html', {'members': members, 'form': form})
+
+
 @login_required()
 def task_list(request):
     filter_status = request.GET.get('status', 'all')
@@ -55,6 +84,32 @@ def task_list(request):
     else:
         form = TaskForm()
     return render(request, 'task_list.html', {'tasks': tasks, 'form': form})
+
+
+@login_required
+def edit_member(request, member_id):
+    member = get_object_or_404(Member, id=member_id)
+
+    if request.method == 'POST':
+        form = MemberForm(request.POST, instance=member)
+        if form.is_valid():
+            form.save()
+            return redirect('member')
+    else:
+        form = MemberForm(instance=member)
+
+    return render(request, 'edit_member.html', {'form': form})
+
+
+@login_required()
+def delete_member(request, member_id):
+    member = get_object_or_404(Member, pk=member_id)
+
+    if request.method == "POST":
+        member.delete()
+        return redirect('member')
+
+    return render(request, 'delete_member.html', {'member': member})
 
 
 def task_edit(request, task_id):

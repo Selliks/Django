@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Delete Member</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/member.css' %}">
+</head>
+<body>
+    <div class="confirmation-container">
+        <h1>Are you sure you want to delete the member {{ member.username }}?</h1>
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="button-container">
+                <button type="submit" class="delete-btn">Yes, Delete</button>
+                <a href="{% url 'member' %}" class="cancel-btn">Cancel</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Members</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/member.css' %}">
+</head>
+<body>
+    <h1>Members</h1>
+
+    <div class="search-container">
+        <form method="get" class="search-form">
+            <input type="text" name="search" placeholder="Search by name or email" value="{{ request.GET.search }}">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <div class="filter-container">
+        <span>Filter by Verification:</span>
+        <div class="filter-buttons">
+            <a href="?status=all" class="filter-btn {% if request.GET.status == 'all' %}active{% endif %}">All</a>
+            <a href="?status=completed" class="filter-btn {% if request.GET.status == 'completed' %}active{% endif %}">Verified</a>
+            <a href="?status=incomplete" class="filter-btn {% if request.GET.status == 'incomplete' %}active{% endif %}">Not Verified</a>
+        </div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Add Member</button>
+    </form>
+
+    <h2>Member List</h2>
+    <ul>
+        {% for member in members %}
+            <li>
+                <div>
+                    Username: {{ member.username }} <br>
+                    Email: <span>{{ member.email }}</span> <br>
+                    Verificated: {{ member.is_verificated }}
+                </div>
+                <div class="task-buttons">
+                    <a href="{% url 'edit_member' member.id %}" class="edit-btn">Edit</a>
+                    <a href="{% url 'delete_member' member.id %}" class="delete-btn">Delete</a>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
