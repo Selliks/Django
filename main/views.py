@@ -1,8 +1,8 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
-from .models import Task, Member
-from .forms import LoginForm, RegisterForm, TaskForm, MemberForm
+from .models import Task, Member, Book
+from .forms import LoginForm, TaskForm, MemberForm, BookForm
 from django.db.models import Q
 
 
@@ -38,6 +38,72 @@ def secret_view(request):
     return render(request, "secret.html")
 
 
+""" Book Settings """
+
+@login_required
+def books(request):
+    filter_status = request.GET.get('status', 'all')
+    search_query = request.GET.get('search', '')
+
+    books = Book.objects.all()
+
+    if filter_status == 'read':
+        books = books.filter(is_read=True)
+    elif filter_status == 'unread':
+        books = books.filter(is_read=False)
+
+    if search_query:
+        books = books.filter(
+            Q(title__icontains=search_query) | Q(author__icontains=search_query)
+        )
+
+    if request.method == 'POST':
+        form = BookForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('books')
+    else:
+        form = BookForm()
+
+    return render(request, 'books.html', {'books': books, 'form': form})
+
+
+@login_required
+def edit_book(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+
+    if request.method == 'POST':
+        form = BookForm(request.POST, instance=book)
+        if form.is_valid():
+            form.save()
+            return redirect('books')
+    else:
+        form = BookForm(instance=book)
+
+    return render(request, 'edit_book.html', {'form': form})
+
+
+@login_required
+def delete_book(request, book_id):
+    book = get_object_or_404(Book, pk=book_id)
+
+    if request.method == "POST":
+        book.delete()
+        return redirect('books')
+
+    return render(request, 'delete_book.html', {'book': book})
+
+
+@login_required
+def mark_as_read(request, book_id):
+    book = get_object_or_404(Book, id=book_id)
+    book.is_read = True
+    book.save()
+    return redirect('books')
+
+""" Member Settings """
+
+
 @login_required
 def member(request):
     filter_verification = request.GET.get('status', 'all')
@@ -66,25 +132,6 @@ def member(request):
     return render(request, 'member.html', {'members': members, 'form': form})
 
 
-@login_required()
-def task_list(request):
-    filter_status = request.GET.get('status', 'all')
-    if filter_status == 'completed':
-        tasks = Task.objects.filter(completed=True)
-    elif filter_status == 'incomplete':
-        tasks = Task.objects.filter(completed=False)
-    else:
-        tasks = Task.objects.all()
-
-    if request.method == 'POST':
-        form = TaskForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('task_list')
-    else:
-        form = TaskForm()
-    return render(request, 'task_list.html', {'tasks': tasks, 'form': form})
-
 
 @login_required
 def edit_member(request, member_id):
@@ -110,6 +157,29 @@ def delete_member(request, member_id):
         return redirect('member')
 
     return render(request, 'delete_member.html', {'member': member})
+
+
+""" Task Settings """
+
+
+@login_required()
+def task_list(request):
+    filter_status = request.GET.get('status', 'all')
+    if filter_status == 'completed':
+        tasks = Task.objects.filter(completed=True)
+    elif filter_status == 'incomplete':
+        tasks = Task.objects.filter(completed=False)
+    else:
+        tasks = Task.objects.all()
+
+    if request.method == 'POST':
+        form = TaskForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('task_list')
+    else:
+        form = TaskForm()
+    return render(request, 'task_list.html', {'tasks': tasks, 'form': form})
 
 
 def task_edit(request, task_id):

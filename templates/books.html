@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Books</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/books.css' %}">
+</head>
+<body>
+    <h1>Books</h1>
+
+    <div class="search-container">
+        <form method="get" class="search-form">
+            <input type="text" name="search" placeholder="Search by title or author" value="{{ request.GET.search }}">
+            <button type="submit">Search</button>
+        </form>
+    </div>
+
+    <div class="filter-container">
+        <span>Filter by Status:</span>
+        <div class="filter-buttons">
+            <a href="?status=all" class="filter-btn {% if request.GET.status == 'all' %}active{% endif %}">All</a>
+            <a href="?status=read" class="filter-btn {% if request.GET.status == 'read' %}active{% endif %}">Read</a>
+            <a href="?status=unread" class="filter-btn {% if request.GET.status == 'unread' %}active{% endif %}">Unread</a>
+        </div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Add Book</button>
+    </form>
+
+    <h2>Book List</h2>
+    <ul>
+        {% for book in books %}
+            <li>
+                <div>
+                    Title: {{ book.title }} <br>
+                    Author: <span>{{ book.author }}</span> <br>
+                    Pages: {{ book.pages }} <br>
+                    Status: {% if book.is_read %}Read{% else %}Unread{% endif %}
+                </div>
+                <div class="task-buttons">
+                    {% if not book.is_read %}
+                        <a href="{% url 'mark_as_read' book.id %}" class="edit-btn">Mark as Read</a>
+                    {% endif %}
+                    <a href="{% url 'edit_book' book.id %}" class="edit-btn">Edit</a>
+                    <a href="{% url 'delete_book' book.id %}" class="delete-btn">Delete</a>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

@@ -1,0 +1,157 @@
+
+@font-face {
+    font-family: 'BoomBoom';
+    src: url('../fonts/BoomBoom.ttf') format('truetype');
+}
+
+body {
+    background-color: #1e1e1e;
+    color: #ffffff;
+    font-family: 'BoomBoom', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+
+h1, h2 {
+    color: #ffffff;
+    text-align: center;
+}
+
+form {
+    background-color: #2e2e2e;
+    padding: 15px;
+    border-radius: 5px;
+    width: 300px;
+    margin: 20px auto;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: #3b82f6;
+    color: #ffffff;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+button:hover {
+    background-color: #2563eb;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+    max-width: 400px;
+    margin: 20px auto;
+}
+
+li {
+    background-color: #333333;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+li span {
+    color: #22c55e;
+}
+
+form input[type="text"], form textarea {
+    background-color: #444444;
+    color: #ffffff;
+    border: 1px solid #666666;
+    padding: 8px;
+    padding-right: 15px;
+    border-radius: 5px;
+    width: calc(100% - 15px);
+    margin-bottom: 10px;
+    resize: none;
+    box-sizing: border-box;
+}
+
+/* Align buttons in .task-buttons container */
+.task-buttons {
+    display: flex;
+    gap: 8px;
+}
+
+.task-buttons a {
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 0.9em;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+/* Complete button */
+.complete-btn {
+    background-color: #ffffff;
+    color: #333333;
+    border: 1px solid #dddddd;
+}
+
+.complete-btn:hover {
+    background-color: #e0e0e0;
+    color: #333333;
+}
+
+.done-btn {
+    background-color: #626663;
+    color: #ffffff;
+}
+
+.done-btn:hover {
+    background-color: #626663;
+}
+
+/* Edit button */
+.edit-btn {
+    background-color: #4caf50;
+    color: #ffffff;
+}
+
+.edit-btn:hover {
+    background-color: #3e8e41;
+}
+
+/* Delete button */
+.delete-btn {
+    background-color: #f44336;
+    color: #ffffff;
+}
+
+.delete-btn:hover {
+    background-color: #d32f2f;
+}
+
+
+
+.filter-buttons {
+    text-align: center;
+    margin: 15px 0;
+}
+
+.filter-btn {
+    padding: 5px 10px;
+    margin: 0 5px;
+    border-radius: 5px;
+    text-decoration: none;
+    background-color: #4a4a4a;
+    color: #ffffff;
+    transition: background-color 0.3s ease;
+}
+
+.filter-btn:hover {
+    background-color: #636363;
+}
+
+.active {
+    background-color: #3b82f6;
+    color: #ffffff;
+}
