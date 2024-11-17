@@ -1,4 +1,5 @@
 from django.contrib.auth.decorators import login_required
+from django.db import IntegrityError
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
 from .models import Task, Member, Book, Post, User
@@ -83,6 +84,7 @@ def like_post(request, post_id, user_id):
 @login_required
 def create_user(request):
     users = User.objects.all()
+    error_message = None
 
     if request.method == "POST":
         username = request.POST.get("username")
@@ -93,12 +95,23 @@ def create_user(request):
             user = get_object_or_404(User, id=user_id)
             user.username = username
             user.bio = bio
-            user.save()
+            try:
+                user.save()
+            except IntegrityError:
+                error_message = f"Username '{username}' is already taken."
         else:
-            User.objects.create(username=username, bio=bio)
-        return redirect("create_user")
+            try:
+                User.objects.create(username=username, bio=bio)
+            except IntegrityError:
+                error_message = f"Username '{username}' is already taken."
 
-    return render(request, "posts/create_user.html", {"users": users})
+        if not error_message:
+            return redirect("create_user")
+
+    return render(request, "posts/create_user.html", {
+        "users": users,
+        "error_message": error_message
+    })
 
 
 @login_required

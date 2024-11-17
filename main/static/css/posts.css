@@ -97,3 +97,9 @@ a.exit-btn:hover {
     background-color: #6b7280;
     transform: scale(1.05);
 }
+
+.error-message {
+    color: red;
+    margin: 10px 0;
+    font-weight: bold;
+}

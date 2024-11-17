@@ -44,7 +44,7 @@ class Book(models.Model):
 
 
 class User(models.Model):
-    username = models.CharField(max_length=32)
+    username = models.CharField(max_length=32, unique=True)
     bio = models.CharField(max_length=128, null=True)
 
     def __str__(self):
