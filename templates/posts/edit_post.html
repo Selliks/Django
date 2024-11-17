@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Post</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/posts.css' %}">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Edit Post</h1>
+
+        <form method="POST">
+            {% csrf_token %}
+            <label for="title">Post Title:</label>
+            <input type="text" id="title" name="title" value="{{ post.title }}" required>
+
+            <label for="author_id">Author:</label>
+            <select name="author_id" id="author_id" required>
+                {% for user in users %}
+                    <option value="{{ user.id }}" {% if user.id == post.author.id %}selected{% endif %}>{{ user.username }}</option>
+                {% endfor %}
+            </select>
+
+            <button type="submit">Save Changes</button>
+        </form>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete Post</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/posts.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Are you sure you want to delete this post?</h1>
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit">Delete Post</button>
+        </form>
+
+        <div>
+            <a href="{% url 'posts' %}" class="exit-btn">Cancel</a>
+        </div>
+    </div>
+</body>
+</html>

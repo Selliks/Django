@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login
-from .models import Task, Member, Book
+from .models import Task, Member, Book, Post, User
 from .forms import LoginForm, TaskForm, MemberForm, BookForm
 from django.db.models import Q
 
@@ -38,7 +38,123 @@ def secret_view(request):
     return render(request, "secret.html")
 
 
-""" Book Settings """
+""" Post and User relation """
+
+
+@login_required
+def posts(request):
+    users = User.objects.all()
+    posts = Post.objects.all()
+
+    active_user_id = request.GET.get("user_id")
+    active_user = User.objects.filter(id=active_user_id).first()
+
+    if request.method == "POST":
+        post_id = request.POST.get("post_id")
+        post = get_object_or_404(Post, id=post_id)
+
+        if active_user:
+            if active_user in post.liked_by.all():
+                post.liked_by.remove(active_user)
+            else:
+                post.liked_by.add(active_user)
+        return redirect("posts")
+
+    return render(request, "posts/posts.html", {
+        "users": users,
+        "posts": posts,
+        "active_user": active_user
+    })
+
+
+@login_required
+def like_post(request, post_id, user_id):
+    post = get_object_or_404(Post, id=post_id)
+    user = get_object_or_404(User, id=user_id)
+
+    if user in post.liked_by.all():
+        post.liked_by.remove(user)
+    else:
+        post.liked_by.add(user)
+
+    return redirect("posts")
+
+
+@login_required
+def create_user(request):
+    users = User.objects.all()
+
+    if request.method == "POST":
+        username = request.POST.get("username")
+        bio = request.POST.get("bio")
+        user_id = request.POST.get("user_id")
+
+        if user_id:
+            user = get_object_or_404(User, id=user_id)
+            user.username = username
+            user.bio = bio
+            user.save()
+        else:
+            User.objects.create(username=username, bio=bio)
+        return redirect("create_user")
+
+    return render(request, "posts/create_user.html", {"users": users})
+
+
+@login_required
+def delete_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    user.delete()
+    return redirect("create_user")
+
+
+@login_required
+def create_post(request):
+    posts = Post.objects.all()
+    users = User.objects.all()
+
+    if request.method == "POST":
+        title = request.POST.get("title")
+        author_id = request.POST.get("author_id")
+
+        if title and author_id:
+            author = get_object_or_404(User, id=author_id)
+            Post.objects.create(title=title, author=author)
+            return redirect("create_post")
+        else:
+            error_message = "Please select an author."
+            return render(request, "posts/create_post.html", {"posts": posts, "users": users, "error_message": error_message})
+
+    return render(request, "posts/create_post.html", {"posts": posts, "users": users})
+
+
+@login_required
+def edit_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    users = User.objects.all()
+
+    if request.method == "POST":
+        title = request.POST.get("title")
+        author_id = request.POST.get("author_id")
+
+        if title and author_id:
+            author = get_object_or_404(User, id=author_id)
+            post.title = title
+            post.author = author
+            post.save()
+            return redirect("create_post")
+
+    return render(request, "posts/edit_post.html", {"post": post, "users": users})
+
+
+@login_required
+def delete_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    post.delete()
+    return redirect("create_post")
+
+
+""" ---Book Settings--- """
 
 @login_required
 def books(request):
@@ -101,7 +217,8 @@ def mark_as_read(request, book_id):
     book.save()
     return redirect('books')
 
-""" Member Settings """
+
+""" ---Member Settings--- """
 
 
 @login_required
@@ -132,7 +249,6 @@ def member(request):
     return render(request, 'member.html', {'members': members, 'form': form})
 
 
-
 @login_required
 def edit_member(request, member_id):
     member = get_object_or_404(Member, id=member_id)
@@ -159,7 +275,7 @@ def delete_member(request, member_id):
     return render(request, 'delete_member.html', {'member': member})
 
 
-""" Task Settings """
+""" ---Task Settings--- """
 
 
 @login_required()

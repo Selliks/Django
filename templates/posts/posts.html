@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+    <title>Posts</title>
+    <link rel="stylesheet" href="{% static 'css/posts.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h1>Posts</h1>
+
+        <div>
+            <h2>Active User:</h2>
+            <form method="GET" action="{% url 'posts' %}">
+                <select name="user_id" onchange="this.form.submit()">
+                    <option value="" {% if not active_user %}selected{% endif %}>Select User</option>
+                    {% for user in users %}
+                        <option value="{{ user.id }}" {% if active_user and user.id == active_user.id %}selected{% endif %}>
+                            {{ user.username }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+
+        <ul>
+            {% for post in posts %}
+                <li>
+                    <strong>{{ post.title }}</strong> by {{ post.author.all|join:", " }}
+                    <form method="POST" style="display: inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="post_id" value="{{ post.id }}">
+                        <button type="submit" {% if not active_user %}disabled{% endif %}>Like</button>
+                    </form>
+                    <span>Likes: {{ post.liked_by.count }}</span>
+                    <a href="{% url 'delete_post' post.id %}">Delete</a>
+                    <a href="{% url 'edit_post' post.id %}">Edit</a>
+                </li>
+            {% endfor %}
+        </ul>
+
+        <a href="{% url 'create_user' %}" class="btn-secondary">Create User</a>
+        <a href="{% url 'create_post' %}" class="btn-secondary">Create Post</a>
+    </div>
+</body>
+</html>

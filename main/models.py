@@ -43,3 +43,18 @@ class Book(models.Model):
         return self.title
 
 
+class User(models.Model):
+    username = models.CharField(max_length=32)
+    bio = models.CharField(max_length=128, null=True)
+
+    def __str__(self):
+        return self.username
+
+
+class Post(models.Model):
+    title = models.CharField(max_length=128)
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
+    liked_by = models.ManyToManyField(User, related_name="liked_posts")
+
+    def __str__(self):
+        return f"Title: {self.title} | Author: {self.author.username}"
